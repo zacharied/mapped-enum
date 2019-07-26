@@ -19,6 +19,11 @@ def enum_map(keys, **kwargs):
         if not issubclass(cls, Enum):
             raise ValueError(f'{cls} is not a descendant of Enum')
 
+        for member in list(cls):
+            if cls._enum_map_tuple_key and len(member.value) != len(keys) \
+                    or not cls._enum_map_tuple_key and type(member.value) is tuple:
+                raise AttributeError(f'{member} has the wrong number of map values')
+
         # TODO This doesn't work if there is only one map value.
         for index, arg in enumerate(keys):
             to_func = to_prefix + arg

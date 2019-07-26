@@ -52,6 +52,28 @@ class TestMapping(unittest.TestCase):
 
         self.assertRaises(ValueError, raises)
 
+    def test_wrong_mapping_count(self):
+        def raises():
+            # noinspection PyUnusedLocal
+            @enum_map('speed color noise')
+            class Car(Enum):
+                RACECAR = 'fast', 'red', 'loud'
+                SEDAN = 'medium', 'gray', 'somewhat'
+                # Missing `noise` mapping
+                HYBRID = 'slow', 'blue'
+
+        self.assertRaises(AttributeError, raises)
+
+        def raises():
+            # noinspection PyUnusedLocal
+            @enum_map('speed')
+            class Car(Enum):
+                RACECAR = 'fast'
+                # Has extra mapping
+                HYBRID = 'slow', 'blue'
+
+        self.assertRaises(AttributeError, raises)
+
 
 if __name__ == '__main__':
     unittest.main()
