@@ -4,6 +4,7 @@ from enum import Enum, auto
 import unittest
 
 
+# TODO Use `assertRaisesRegex` instead of just `assertRegex`.
 class TestMapping(unittest.TestCase):
     def setUp(self):
         @enum_map('color sound')
@@ -30,6 +31,15 @@ class TestMapping(unittest.TestCase):
 
         self.assertRaises(ValueError, raises)
 
+    def test_invalid_keynames(self):
+        def raises():
+            # noinspection PyUnusedLocal
+            @enum_map('!bar')
+            class Foo:
+                pass
+
+        self.assertRaises(ValueError, raises)
+
     def test_alternate_prefix(self):
         @enum_map('direction', to_prefix='as_', from_prefix='with_')
         class Cardinal(Enum):
@@ -40,6 +50,15 @@ class TestMapping(unittest.TestCase):
 
         self.assertEqual(Cardinal.NORTH.as_direction(), 'up')
         self.assertEqual(Cardinal.with_direction('left'), Cardinal.WEST)
+
+    def test_wrong_alternate_prefix(self):
+        def raises():
+            # noinspection PyUnusedLocal
+            @enum_map('name', to_prefix='1to_')
+            class Foo(Enum):
+                pass
+
+        self.assertRaises(ValueError, raises)
 
     def test_no_keys(self):
         def raises():

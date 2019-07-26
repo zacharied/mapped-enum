@@ -1,16 +1,32 @@
 from enum import Enum
+import re
 
 KWARGS_PARAM_TO_PREFIX = 'to_prefix'
 KWARGS_PARAM_FROM_PREFIX = 'from_prefix'
+
+identifier_regex = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
+map_key_regex = re.compile(r'[A-Za-z0-9_]+')
 
 
 def enum_map(keys, **kwargs):
     # TODO Documentation
     keys = keys.replace('-', '_').split(' ')
+
     if keys[0] == '':
         raise ValueError('at least one key must be specified')
 
+    for keyname in keys:
+        if map_key_regex.match(keyname) is None:
+            raise ValueError(f'key {keyname} results in invalid identifiers')
+
     def inner(cls):
+        if KWARGS_PARAM_TO_PREFIX in kwargs:
+            if identifier_regex.match(kwargs[KWARGS_PARAM_TO_PREFIX]) is None:
+                raise ValueError(f'invalid prefix {kwargs[KWARGS_PARAM_TO_PREFIX]} for `to` method')
+        if KWARGS_PARAM_FROM_PREFIX in kwargs:
+            if identifier_regex.match(kwargs[KWARGS_PARAM_FROM_PREFIX]) is None:
+                raise ValueError(f'invalid prefix {kwargs[KWARGS_PARAM_FROM_PREFIX]} for `from` method')
+
         to_prefix = 'to_' if KWARGS_PARAM_TO_PREFIX not in kwargs else kwargs[KWARGS_PARAM_TO_PREFIX]
         from_prefix = 'from_' if KWARGS_PARAM_FROM_PREFIX not in kwargs else kwargs[KWARGS_PARAM_FROM_PREFIX]
 
