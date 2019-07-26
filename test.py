@@ -22,6 +22,7 @@ class TestMapping(unittest.TestCase):
 
     def test_non_enum(self):
         def raises():
+            # noinspection PyUnusedLocal
             @enum_map('bar')
             class Foo:
                 pass
