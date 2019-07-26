@@ -3,6 +3,7 @@ from enum import Enum
 
 import unittest
 
+
 class TestMapping(unittest.TestCase):
     def setUp(self):
         @enum_map('color sound')
@@ -39,6 +40,7 @@ class TestMapping(unittest.TestCase):
 
         self.assertEqual(Cardinal.NORTH.as_direction(), 'up')
         self.assertEqual(Cardinal.with_direction('left'), Cardinal.WEST)
+
 
 if __name__ == '__main__':
     unittest.main()

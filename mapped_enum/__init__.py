@@ -3,6 +3,7 @@ from enum import Enum
 KWARGS_PARAM_TO_PREFIX = 'to_prefix'
 KWARGS_PARAM_FROM_PREFIX = 'from_prefix'
 
+
 def enum_map(keys, **kwargs):
     keys = keys.replace('-', '_').split(' ')
 
