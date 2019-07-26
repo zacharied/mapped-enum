@@ -5,7 +5,7 @@ import unittest
 
 class TestMapping(unittest.TestCase):
     def setUp(self):
-        @enum_map('color', 'sound')
+        @enum_map('color sound')
         class Animal(Enum):
             CHOCOLATE_LAB = 'brown', 'woof'
             TABBY_CAT = 'orange', 'meow'
@@ -30,12 +30,12 @@ class TestMapping(unittest.TestCase):
         self.assertRaises(ValueError, raises)
 
     def test_alternate_prefix(self):
-        @enum_map('direction', 'value', to_prefix='as_', from_prefix='with_')
+        @enum_map('direction', to_prefix='as_', from_prefix='with_')
         class Cardinal(Enum):
-            NORTH = 'up', 0
-            SOUTH = 'down', 1
-            WEST = 'left', 2
-            EAST = 'right', 3
+            NORTH = 'up'
+            SOUTH = 'down'
+            WEST = 'left'
+            EAST = 'right'
 
         self.assertEqual(Cardinal.NORTH.as_direction(), 'up')
         self.assertEqual(Cardinal.with_direction('left'), Cardinal.WEST)
