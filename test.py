@@ -20,5 +20,13 @@ class TestMapping(unittest.TestCase):
         self.assertEqual(self.Animal.from_color('yellow'), self.Animal.LION)
         self.assertEqual(self.Animal.from_sound('woof'), self.Animal.CHOCOLATE_LAB)
 
+    def test_non_enum(self):
+        def raises():
+            @enum_map('bar')
+            class Foo:
+                pass
+
+        self.assertRaises(ValueError, raises)
+
 if __name__ == '__main__':
     unittest.main()
