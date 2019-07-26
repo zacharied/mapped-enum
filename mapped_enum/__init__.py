@@ -6,11 +6,15 @@ KWARGS_PARAM_FROM_PREFIX = 'from_prefix'
 
 def enum_map(keys, **kwargs):
     keys = keys.replace('-', '_').split(' ')
+    if len(keys) < 1:
+        raise ValueError('at least one key must be specified')
 
     # TODO Documentation
     def inner(cls):
         to_prefix = 'to_' if KWARGS_PARAM_TO_PREFIX not in kwargs else kwargs[KWARGS_PARAM_TO_PREFIX]
         from_prefix = 'from_' if KWARGS_PARAM_FROM_PREFIX not in kwargs else kwargs[KWARGS_PARAM_FROM_PREFIX]
+
+        cls._enum_map_tuple_key = len(keys) != 1
 
         if not issubclass(cls, Enum):
             raise ValueError(f'{cls} is not a descendant of Enum')
@@ -24,7 +28,7 @@ def enum_map(keys, **kwargs):
                 # TODO Are these methods added before or after the class has been initialized?
                 # The i=index is done to capture the value of i, since defaults are captured at function declaration.
                 def mapto(e, i=index):
-                    return e.value[i] if type(e.value) is tuple else e.value
+                    return e.value[i] if cls._enum_map_tuple_key else e.value
 
                 setattr(cls, to_func, mapto)
 
@@ -32,7 +36,7 @@ def enum_map(keys, **kwargs):
                 # Same thing here.
                 def mapfrom(kls, k, i=index):
                     for m in kls:
-                        if (m.value[i] if type(m.value) is tuple else m.value) == k:
+                        if (m.value[i] if cls._enum_map_tuple_key else m.value) == k:
                             return m
 
                 setattr(cls, from_func, classmethod(mapfrom))
