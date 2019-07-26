@@ -5,11 +5,11 @@ KWARGS_PARAM_FROM_PREFIX = 'from_prefix'
 
 
 def enum_map(keys, **kwargs):
+    # TODO Documentation
     keys = keys.replace('-', '_').split(' ')
     if keys[0] == '':
         raise ValueError('at least one key must be specified')
 
-    # TODO Documentation
     def inner(cls):
         to_prefix = 'to_' if KWARGS_PARAM_TO_PREFIX not in kwargs else kwargs[KWARGS_PARAM_TO_PREFIX]
         from_prefix = 'from_' if KWARGS_PARAM_FROM_PREFIX not in kwargs else kwargs[KWARGS_PARAM_FROM_PREFIX]
@@ -24,7 +24,6 @@ def enum_map(keys, **kwargs):
                     or not cls._enum_map_tuple_key and type(member.value) is tuple:
                 raise AttributeError(f'{member} has the wrong number of map values')
 
-        # TODO This doesn't work if there is only one map value.
         for index, arg in enumerate(keys):
             to_func = to_prefix + arg
             from_func = from_prefix + arg
