@@ -6,7 +6,7 @@ KWARGS_PARAM_FROM_PREFIX = 'from_prefix'
 
 def enum_map(keys, **kwargs):
     keys = keys.replace('-', '_').split(' ')
-    if len(keys) < 1:
+    if keys[0] == '':
         raise ValueError('at least one key must be specified')
 
     # TODO Documentation

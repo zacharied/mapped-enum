@@ -1,5 +1,5 @@
 from mapped_enum import enum_map
-from enum import Enum
+from enum import Enum, auto
 
 import unittest
 
@@ -40,6 +40,17 @@ class TestMapping(unittest.TestCase):
 
         self.assertEqual(Cardinal.NORTH.as_direction(), 'up')
         self.assertEqual(Cardinal.with_direction('left'), Cardinal.WEST)
+
+    def test_no_keys(self):
+        def raises():
+            # noinspection PyUnusedLocal
+            @enum_map('')
+            class Car(Enum):
+                RACECAR = auto()
+                SPORTSCAR = auto()
+                SEDAN = auto()
+
+        self.assertRaises(ValueError, raises)
 
 
 if __name__ == '__main__':
