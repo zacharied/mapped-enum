@@ -1,5 +1,5 @@
 from mapped_enum import enum_map
-from enum import Enum, auto
+from enum import Enum
 
 import unittest
 
@@ -44,9 +44,7 @@ class TestMapping(unittest.TestCase):
         @enum_map('direction', to_prefix='as_', from_prefix='with_')
         class Cardinal(Enum):
             NORTH = 'up'
-            SOUTH = 'down'
             WEST = 'left'
-            EAST = 'right'
 
         self.assertEqual(Cardinal.NORTH.as_direction(), 'up')
         self.assertEqual(Cardinal.with_direction('left'), Cardinal.WEST)
@@ -64,10 +62,8 @@ class TestMapping(unittest.TestCase):
         def raises():
             # noinspection PyUnusedLocal
             @enum_map('')
-            class Car(Enum):
-                RACECAR = auto()
-                SPORTSCAR = auto()
-                SEDAN = auto()
+            class Foo(Enum):
+                pass
 
         self.assertRaises(ValueError, raises)
 
@@ -77,7 +73,6 @@ class TestMapping(unittest.TestCase):
             @enum_map('speed color noise')
             class Car(Enum):
                 RACECAR = 'fast', 'red', 'loud'
-                SEDAN = 'medium', 'gray', 'somewhat'
                 # Missing `noise` mapping
                 HYBRID = 'slow', 'blue'
 
