@@ -48,31 +48,39 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_'):
         if not issubclass(cls, Enum):
             raise ValueError(f'{cls} is not a descendant of Enum')
 
+        # Construct the mappings.
         cls._enum_map_tuples = {}
         for member in cls:
+            # Convert the value to a tuple if there is only one value per enum member.
             cls._enum_map_tuples[member] = member.value if type(member.value) is tuple else (member.value,)
+
+            # Ensure each member has the right number of keys.
             if len(cls._enum_map_tuples[member]) != len(keys):
                 raise AttributeError(f'{member} has the wrong number of map values (expected {len(keys)},'
                                      f'got {len(cls._enum_map_tuples[member])})')
 
+        # Generate the `to` and `from` functions for each map key.
         for index, arg in enumerate(keys):
             to_func = to_prefix + arg
             from_func = from_prefix + arg
 
-            if not hasattr(cls, to_func):
+            if hasattr(cls, to_func):
+                raise ValueError(f'the method "{to_func}" already exists')
+            else:
                 # The i=index is done to capture the value of i, since defaults are captured at function declaration.
                 def mapto(e, i=index):
                     return cls._enum_map_tuples[e][i]
-
                 setattr(cls, to_func, mapto)
 
-            if not hasattr(cls, from_func):
-                # Same thing here.
+            if hasattr(cls, from_func):
+                raise ValueError(f'the method "{from_func}" already exists')
+            else:
+                # The i=index is done to capture the value of i, since defaults are captured at function declaration.
                 def mapfrom(kls, k, i=index):
-                    for m in kls:
-                        if cls._enum_map_tuples[m][i] == k:
-                            return m
-
+                    try:
+                        return next(m for m in kls if cls._enum_map_tuples[m][i] == k)
+                    except StopIteration:
+                        return None
                 setattr(cls, from_func, classmethod(mapfrom))
 
         return cls
