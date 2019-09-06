@@ -56,7 +56,7 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_'):
 
             # Ensure each member has the right number of keys.
             if len(cls._enum_map_tuples[member]) != len(keys):
-                raise AttributeError(f'{member} has the wrong number of map values (expected {len(keys)},'
+                raise AttributeError(f'{member} has the wrong number of map values (expected {len(keys)}, '
                                      f'got {len(cls._enum_map_tuples[member])})')
 
         # Generate the `to` and `from` functions for each map key.
