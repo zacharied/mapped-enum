@@ -30,25 +30,24 @@ def enum_map(keys, **kwargs):
         to_prefix = 'to_' if KWARGS_PARAM_TO_PREFIX not in kwargs else kwargs[KWARGS_PARAM_TO_PREFIX]
         from_prefix = 'from_' if KWARGS_PARAM_FROM_PREFIX not in kwargs else kwargs[KWARGS_PARAM_FROM_PREFIX]
 
-        cls._enum_map_tuple_key = len(keys) != 1
-
         if not issubclass(cls, Enum):
             raise ValueError(f'{cls} is not a descendant of Enum')
 
-        for member in list(cls):
-            if cls._enum_map_tuple_key and len(member.value) != len(keys) \
-                    or not cls._enum_map_tuple_key and type(member.value) is tuple:
-                raise AttributeError(f'{member} has the wrong number of map values')
+        cls._enum_map_tuples = {}
+        for member in cls:
+            cls._enum_map_tuples[member] = member.value if type(member.value) is tuple else (member.value,)
+            if len(cls._enum_map_tuples[member]) != len(keys):
+                raise AttributeError(f'{member} has the wrong number of map values (expected {len(keys)},'
+                                     f'got {len(cls._enum_map_tuples[member])})')
 
         for index, arg in enumerate(keys):
             to_func = to_prefix + arg
             from_func = from_prefix + arg
 
             if not hasattr(cls, to_func):
-                # TODO Are these methods added before or after the class has been initialized?
                 # The i=index is done to capture the value of i, since defaults are captured at function declaration.
                 def mapto(e, i=index):
-                    return e.value[i] if cls._enum_map_tuple_key else e.value
+                    return cls._enum_map_tuples[e][i]
 
                 setattr(cls, to_func, mapto)
 
@@ -56,7 +55,7 @@ def enum_map(keys, **kwargs):
                 # Same thing here.
                 def mapfrom(kls, k, i=index):
                     for m in kls:
-                        if (m.value[i] if cls._enum_map_tuple_key else m.value) == k:
+                        if cls._enum_map_tuples[m][i] == k:
                             return m
 
                 setattr(cls, from_func, classmethod(mapfrom))
