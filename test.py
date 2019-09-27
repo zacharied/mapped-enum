@@ -23,22 +23,18 @@ class TestMapping(unittest.TestCase):
         self.assertEqual(self.Animal.from_sound('woof'), self.Animal.CHOCOLATE_LAB)
 
     def test_non_enum(self):
-        def raises():
+        with self.assertRaisesRegex(ValueError, 'not a descendant of Enum$'):
             # noinspection PyUnusedLocal
             @enum_map('bar')
             class Foo:
                 pass
 
-        self.assertRaises(ValueError, raises)
-
     def test_invalid_keynames(self):
-        def raises():
+        with self.assertRaisesRegex(ValueError, 'results in invalid identifiers$'):
             # noinspection PyUnusedLocal
             @enum_map('!bar')
             class Foo:
                 pass
-
-        self.assertRaises(ValueError, raises)
 
     def test_alternate_prefix(self):
         @enum_map('direction', to_prefix='as_', from_prefix='with_')
@@ -50,25 +46,21 @@ class TestMapping(unittest.TestCase):
         self.assertEqual(Cardinal.with_direction('left'), Cardinal.WEST)
 
     def test_wrong_alternate_prefix(self):
-        def raises():
+        with self.assertRaisesRegex(ValueError, '^invalid prefix ".*" for `to` method$'):
             # noinspection PyUnusedLocal
             @enum_map('name', to_prefix='1to_')
             class Foo(Enum):
                 pass
 
-        self.assertRaises(ValueError, raises)
-
     def test_no_keys(self):
-        def raises():
+        with self.assertRaisesRegex(ValueError, '^at least one key must be specified$'):
             # noinspection PyUnusedLocal
             @enum_map('')
             class Foo(Enum):
                 pass
 
-        self.assertRaises(ValueError, raises)
-
     def test_wrong_mapping_count(self):
-        def raises():
+        with self.assertRaisesRegex(AttributeError, '^.* has the wrong number of map values'):
             # noinspection PyUnusedLocal
             @enum_map('speed color noise')
             class Car(Enum):
@@ -76,17 +68,13 @@ class TestMapping(unittest.TestCase):
                 # Missing `noise` mapping
                 HYBRID = 'slow', 'blue'
 
-        self.assertRaises(AttributeError, raises)
-
-        def raises():
+        with self.assertRaisesRegex(AttributeError, '^.* has the wrong number of map values'):
             # noinspection PyUnusedLocal
             @enum_map('speed')
             class Car(Enum):
                 RACECAR = 'fast'
                 # Has extra mapping
                 HYBRID = 'slow', 'blue'
-
-        self.assertRaises(AttributeError, raises)
 
     def test_override(self):
         with self.assertRaisesRegex(ValueError, 'already exists$'):
