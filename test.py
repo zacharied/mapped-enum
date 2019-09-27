@@ -4,7 +4,6 @@ from enum import Enum
 import unittest
 
 
-# TODO Use `assertRaisesRegex` instead of just `assertRegex`.
 class TestMapping(unittest.TestCase):
     def setUp(self):
         @enum_map('color sound')
