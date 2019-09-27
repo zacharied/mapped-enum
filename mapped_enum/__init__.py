@@ -2,16 +2,18 @@ from enum import Enum
 from functools import partial, partialmethod
 import re
 
+from typing import Union, List
+
 identifier_regex = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 map_key_regex = re.compile(r'[A-Za-z0-9_]+')
 
 
 def enum_map(
-    keys,
-    to_prefix='to_',
-    from_prefix='from_',
-    allow_override=False,
-    multiple_from=False
+    keys: Union[List[str], str],
+    to_prefix: str = 'to_',
+    from_prefix: str = 'from_',
+    allow_override: bool = False,
+    multiple_from: bool = False
 ):
     """
     Map the values of enum members to keywords for clear and concise conversions to and lookups from those keys. Each
