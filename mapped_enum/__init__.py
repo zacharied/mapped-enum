@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import partial, partialmethod
 import re
 
 identifier_regex = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
@@ -70,22 +71,22 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False):
                 if not allow_override:
                     raise ValueError(f'the method "{to_func}" already exists')
             else:
-                # The i=index is done to capture the value of i, since defaults are captured at function declaration.
-                def mapto(e, i=index):
+                # We provide i as a keyword argument so we can capture it later using `partialmethod`.
+                def mapto(e, i=-1):
                     return cls._enum_map_tuples[e][i]
-                setattr(cls, to_func, mapto)
+                setattr(cls, to_func, partialmethod(mapto, i=index))
 
             if hasattr(cls, from_func):
                 if not allow_override:
                     raise ValueError(f'the method "{from_func}" already exists')
             else:
-                # The i=index is done to capture the value of i, since defaults are captured at function declaration.
-                def mapfrom(kls, k, i=index):
+                # The same technique as above is used for i here, except we capture it with `partial` instead.
+                def mapfrom(kls, k, i=-1):
                     try:
                         return next(m for m in kls if cls._enum_map_tuples[m][i] == k)
                     except StopIteration:
                         return None
-                setattr(cls, from_func, classmethod(mapfrom))
+                setattr(cls, from_func, classmethod(partial(mapfrom, i=index)))
 
         return cls
 
