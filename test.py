@@ -6,7 +6,7 @@ import unittest
 
 class TestMapping(unittest.TestCase):
     def setUp(self):
-        @enum_map('color sound')
+        @enum_map(['color', 'sound'])
         class Animal(Enum):
             CHOCOLATE_LAB = 'brown', 'woof'
             TABBY_CAT = 'orange', 'meow'
@@ -24,19 +24,19 @@ class TestMapping(unittest.TestCase):
     def test_non_enum(self):
         with self.assertRaisesRegex(ValueError, 'not a descendant of Enum$'):
             # noinspection PyUnusedLocal
-            @enum_map('bar')
+            @enum_map(['bar'])
             class Foo:
                 pass
 
     def test_invalid_keynames(self):
         with self.assertRaisesRegex(ValueError, 'results in invalid identifiers$'):
             # noinspection PyUnusedLocal
-            @enum_map('!bar')
+            @enum_map(['!bar'])
             class Foo:
                 pass
 
     def test_alternate_prefix(self):
-        @enum_map('direction', to_prefix='as_', from_prefix='with_')
+        @enum_map(['direction'], to_prefix='as_', from_prefix='with_')
         class Cardinal(Enum):
             NORTH = 'up'
             WEST = 'left'
@@ -47,21 +47,27 @@ class TestMapping(unittest.TestCase):
     def test_wrong_alternate_prefix(self):
         with self.assertRaisesRegex(ValueError, '^invalid prefix ".*" for `to` method$'):
             # noinspection PyUnusedLocal
-            @enum_map('name', to_prefix='1to_')
+            @enum_map(['name'], to_prefix='1to_')
             class Foo(Enum):
                 pass
 
     def test_no_keys(self):
-        with self.assertRaisesRegex(ValueError, '^at least one key must be specified$'):
+        with self.assertRaisesRegex(ValueError, '^keys specifier cannot be empty$'):
             # noinspection PyUnusedLocal
             @enum_map('')
+            class Foo(Enum):
+                pass
+
+        with self.assertRaisesRegex(ValueError, '^at least one key must be specified'):
+            # noinspection PyUnusedLocal
+            @enum_map([])
             class Foo(Enum):
                 pass
 
     def test_wrong_mapping_count(self):
         with self.assertRaisesRegex(AttributeError, '^.* has the wrong number of map values'):
             # noinspection PyUnusedLocal
-            @enum_map('speed color noise')
+            @enum_map(['speed', 'color', 'noise'])
             class Car(Enum):
                 RACECAR = 'fast', 'red', 'loud'
                 # Missing `noise` mapping
@@ -69,7 +75,7 @@ class TestMapping(unittest.TestCase):
 
         with self.assertRaisesRegex(AttributeError, '^.* has the wrong number of map values'):
             # noinspection PyUnusedLocal
-            @enum_map('speed')
+            @enum_map(['speed'])
             class Car(Enum):
                 RACECAR = 'fast'
                 # Has extra mapping
@@ -78,7 +84,7 @@ class TestMapping(unittest.TestCase):
     def test_override(self):
         with self.assertRaisesRegex(ValueError, 'already exists$'):
             # noinspection PyUnusedLocal
-            @enum_map('first_month color')
+            @enum_map(['first_month', 'color'])
             class Season(Enum):
                 SPRING = 'march', 'green'
                 SUMMER = 'july', 'yellow'
@@ -89,7 +95,7 @@ class TestMapping(unittest.TestCase):
                     # This method being defined should cause an exception.
                     pass
 
-        @enum_map('first_month color', allow_override=True)
+        @enum_map(['first_month', 'color'], allow_override=True)
         class Season(Enum):
             SPRING = 'march', 'green'
             SUMMER = 'july', 'yellow'
@@ -106,7 +112,7 @@ class TestMapping(unittest.TestCase):
         self.assertEqual(Season.SUMMER.to_color(), 'red')
 
     def test_multiple_froms(self):
-        @enum_map('ground water', multiple_from=True)
+        @enum_map(['ground', 'water'], multiple_from=True)
         class Environment(Enum):
             DESERT = 'sand', 'none'
             BEACH = 'sand', 'lots'

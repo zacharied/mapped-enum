@@ -6,7 +6,13 @@ identifier_regex = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 map_key_regex = re.compile(r'[A-Za-z0-9_]+')
 
 
-def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False, multiple_from=False):
+def enum_map(
+    keys,
+    to_prefix='to_',
+    from_prefix='from_',
+    allow_override=False,
+    multiple_from=False
+):
     """
     Map the values of enum members to keywords for clear and concise conversions to and lookups from those keys. Each
     enum member must have a tuple value with a length equal to the number of space-separated keywords defined in the
@@ -26,7 +32,9 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False, m
     with the value index corresponding to the index of the `key`word. If there is no enum member that satisfies the
     requested value, it will return `None`.
 
-    :param keys: A single string containing a space-separated series of keys.
+    :param keys: An array of strings, each one a key to create mapping methods for. This is the preferred style when
+    there is more than one key. Alternatively, it can be a single string, with space-separated key names to denote
+    multiple keys.
     :param to_prefix: An alternative prefix for the conversion methods instead of `to_`.
     :param from_prefix: An alternative prefix for the lookup methods instead of `from_`.
     :param allow_override: If True, if the enum defines methods with the same name as a possible `enum_map` method, the
@@ -36,10 +44,15 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False, m
     calls to a `from_`  method will return the first matching term, or None if no match is found.
     :return: The decorated class.
     """
-    keys = keys.replace('-', '_').split(' ')
-
-    if keys[0] == '':
-        raise ValueError('at least one key must be specified')
+    if type(keys) is str:
+        if keys == '':
+            raise ValueError('keys specifier cannot be empty')
+        keys = keys.replace('-', '_').split(' ')
+    elif type(keys) is list:
+        if len(keys) == 0:
+            raise ValueError('at least one key must be specified')
+    else:
+        raise TypeError('invalid type for keys')
 
     for keyname in keys:
         if map_key_regex.match(keyname) is None:
