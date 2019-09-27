@@ -5,7 +5,7 @@ with open('README.md', 'r') as desc:
 
 setuptools.setup(
     name='mapped-enum',
-    version='0.2.2',
+    version='0.2.3',
     author='Zach Day',
     author_email='z@zach.gdn',
     description='Enums with arbitrary lookup tables',
