@@ -6,7 +6,7 @@ identifier_regex = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 map_key_regex = re.compile(r'[A-Za-z0-9_]+')
 
 
-def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False):
+def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False, multiple_from=False):
     """
     Map the values of enum members to keywords for clear and concise conversions to and lookups from those keys. Each
     enum member must have a tuple value with a length equal to the number of space-separated keywords defined in the
@@ -31,6 +31,9 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False):
     :param from_prefix: An alternative prefix for the lookup methods instead of `from_`.
     :param allow_override: If True, if the enum defines methods with the same name as a possible `enum_map` method, the
     `enum_map` method will be silently overridden. Otherwise, an error will be thrown.
+    :param multiple_from: If True, calls to a `from_` method with multiple members matching the search term will return
+    all of those members; consequently, such a call with no matching members will return an empty list. If False, then
+    calls to a `from_`  method will return the first matching term, or None if no match is found.
     :return: The decorated class.
     """
     keys = keys.replace('-', '_').split(' ')
@@ -82,10 +85,11 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False):
             else:
                 # The same technique as above is used for i here, except we capture it with `partial` instead.
                 def mapfrom(kls, k, i=-1):
-                    try:
-                        return next(m for m in kls if cls._enum_map_tuples[m][i] == k)
-                    except StopIteration:
-                        return None
+                    froms = [m for m in kls if cls._enum_map_tuples[m][i] == k]
+                    if multiple_from:
+                        return froms
+                    else:
+                        return froms[0] if len(froms) > 0 else None
                 setattr(cls, from_func, classmethod(partial(mapfrom, i=index)))
 
         return cls

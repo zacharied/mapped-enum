@@ -105,6 +105,15 @@ class TestMapping(unittest.TestCase):
         self.assertEqual(Season.WINTER.to_color(), 'blue')
         self.assertEqual(Season.SUMMER.to_color(), 'red')
 
+    def test_multiple_froms(self):
+        @enum_map('ground water', multiple_from=True)
+        class Environment(Enum):
+            DESERT = 'sand', 'none'
+            BEACH = 'sand', 'lots'
+            PLAINS = 'grass', 'some'
+
+        self.assertEqual(Environment.from_ground('sand'), [Environment.DESERT, Environment.BEACH])
+
 
 if __name__ == '__main__':
     unittest.main()
