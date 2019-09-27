@@ -5,7 +5,7 @@ identifier_regex = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 map_key_regex = re.compile(r'[A-Za-z0-9_]+')
 
 
-def enum_map(keys, to_prefix='to_', from_prefix='from_'):
+def enum_map(keys, to_prefix='to_', from_prefix='from_', allow_override=False):
     """
     Map the values of enum members to keywords for clear and concise conversions to and lookups from those keys. Each
     enum member must have a tuple value with a length equal to the number of space-separated keywords defined in the
@@ -28,6 +28,8 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_'):
     :param keys: A single string containing a space-separated series of keys.
     :param to_prefix: An alternative prefix for the conversion methods instead of `to_`.
     :param from_prefix: An alternative prefix for the lookup methods instead of `from_`.
+    :param allow_override: If True, if the enum defines methods with the same name as a possible `enum_map` method, the
+    `enum_map` method will be silently overridden. Otherwise, an error will be thrown.
     :return: The decorated class.
     """
     keys = keys.replace('-', '_').split(' ')
@@ -65,7 +67,8 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_'):
             from_func = from_prefix + arg
 
             if hasattr(cls, to_func):
-                raise ValueError(f'the method "{to_func}" already exists')
+                if not allow_override:
+                    raise ValueError(f'the method "{to_func}" already exists')
             else:
                 # The i=index is done to capture the value of i, since defaults are captured at function declaration.
                 def mapto(e, i=index):
@@ -73,7 +76,8 @@ def enum_map(keys, to_prefix='to_', from_prefix='from_'):
                 setattr(cls, to_func, mapto)
 
             if hasattr(cls, from_func):
-                raise ValueError(f'the method "{from_func}" already exists')
+                if not allow_override:
+                    raise ValueError(f'the method "{from_func}" already exists')
             else:
                 # The i=index is done to capture the value of i, since defaults are captured at function declaration.
                 def mapfrom(kls, k, i=index):

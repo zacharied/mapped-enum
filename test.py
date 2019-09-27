@@ -88,6 +88,36 @@ class TestMapping(unittest.TestCase):
 
         self.assertRaises(AttributeError, raises)
 
+    def test_override(self):
+        with self.assertRaisesRegex(ValueError, 'already exists$'):
+            # noinspection PyUnusedLocal
+            @enum_map('first_month color')
+            class Season(Enum):
+                SPRING = 'march', 'green'
+                SUMMER = 'july', 'yellow'
+                FALL = 'september', 'orange'
+                WINTER = 'december', 'blue'
+
+                def to_color(self):
+                    # This method being defined should cause an exception.
+                    pass
+
+        @enum_map('first_month color', allow_override=True)
+        class Season(Enum):
+            SPRING = 'march', 'green'
+            SUMMER = 'july', 'yellow'
+            FALL = 'september', 'orange'
+            WINTER = 'december', 'blue'
+
+            def to_color(self):
+                # Override Summer's color to be red instead.
+                if self == self.SUMMER:
+                    return 'red'
+                return self.value[1]
+
+        self.assertEqual(Season.WINTER.to_color(), 'blue')
+        self.assertEqual(Season.SUMMER.to_color(), 'red')
+
 
 if __name__ == '__main__':
     unittest.main()
