@@ -54,8 +54,8 @@ requested value, it will return `None`.
 The annotation can take a number of optional arguments to modify its behavior.
 
 | Parameter name | Type | Purpose |
-| - | - |
+| --- | --- | --- |
 | `to_prefix` | `str` | An alternative prefix for the conversion methods instead of `to_`. |
-| `from_prefix` | An alternative prefix for the lookup methods instead of `from_`. |
-| `allow_override` | If True, if the enum defines methods with the same name as a possible `enum_map` method, the `enum_map` method will be silently overridden. Otherwise, an error will be thrown. |
-| `multiple_from` | If True, calls to a `from_` method with multiple members matching the search term will return all of those members; consequently, such a call with no matching members will return an empty list. If False, then calls to a `from_`  method will return the first matching term, or None if no match is found. |
+| `from_prefix` | `str` | An alternative prefix for the lookup methods instead of `from_`. |
+| `allow_override` | `bool` | If True, if the enum defines methods with the same name as a possible `enum_map` method, the `enum_map` method will be silently overridden. Otherwise, an error will be thrown. |
+| `multiple_from` | `bool` | If True, calls to a `from_` method with multiple members matching the search term will return all of those members; consequently, such a call with no matching members will return an empty list. If False, then calls to a `from_`  method will return the first matching term, or None if no match is found. |
