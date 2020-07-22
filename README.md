@@ -1,6 +1,7 @@
 # mapped-enum
 
 [![PyPI version](https://badge.fury.io/py/mapped-enum.svg)](https://badge.fury.io/py/mapped-enum)
+[![Python package](https://github.com/zacharied/mapped-enum/workflows/Python%20package/badge.svg)](https://github.com/zacharied/mapped-enum/workflows/Python%20package/badge.svg)
 
 `Enum`s that can easily map to and from arbitrary values of another type.
 
